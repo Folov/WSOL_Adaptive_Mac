@@ -779,10 +779,14 @@ void Set_ampdusize (uint32_t size)
 {
 	Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/$ns3::RegularWifiMac/BE_MaxAmpduSize", UintegerValue (size));
 }
-void Set_velocity (const Vector &speed)
-{
-	Config::Set ("/NodeList/*/$ns3::MobilityModel/Velocity", Vector (speed));
-}
+// void Set_velocity (const Vector &speed)
+// {
+	// Config::Set ("/NodeList/*/$ns3::MobilityModel/Velocity", Vector3DValue (speed));
+// 	for (int i = 0; i < numberOfnodes; i++)
+// 	{
+// 		nodes.Get (i)->GetObject<ConstantVelocityMobilityModel> ()->SetVelocity (speed);
+// 	}
+// }
 
 int main (int argc, char *argv[])
 {
@@ -964,15 +968,26 @@ int main (int argc, char *argv[])
 	positionAlloc->Add (Vector (19.5, 0.0, 0.0));
 	positionAlloc->Add (Vector (26.0, 0.0, 0.0));
 	mobility.SetPositionAllocator (positionAlloc);
-	mobility.SetMobilityModel ("ns3::ConstantVelocityMobilityModel");
+	// mobility.SetMobilityModel ("ns3::ConstantVelocityMobilityModel");
+
+	double values[] = { 0.0, 3.141592 };
+	Ptr<DeterministicRandomVariable> det1 = CreateObject<DeterministicRandomVariable> ();
+	det1->SetValueArray (values, sizeof(values) / sizeof(values[0]));
+
+	mobility.SetMobilityModel ("ns3::RandomWalk2dMobilityModel",
+                               "Bounds", RectangleValue (Rectangle (-50, 50, -50, 50)),
+                               "Speed", StringValue ("ns3::ConstantRandomVariable[Constant=0.1]"),
+                               "Direction", PointerValue (det1),
+                               "Time", StringValue ("20s"),
+                               "Distance", DoubleValue (2.0));
 	mobility.Install (nodes);
 
-	for (int i = 0; i < numberOfnodes; i++)
-	{
-		nodes.Get (i)->GetObject<ConstantVelocityMobilityModel> ()->SetVelocity (Vector (0.0, 0.0, 0.0));
-	}
-	Simulator::Schedule (Seconds (2.0), &Set_velocity, Vector (0.1, 0.0, 0.0));
-	Simulator::Schedule (Seconds (22.0), &Set_velocity, Vector (-0.1, 0.0, 0.0));
+	// for (int i = 0; i < numberOfnodes; i++)
+	// {
+	// 	nodes.Get (i)->GetObject<ConstantVelocityMobilityModel> ()->SetVelocity (Vector (0.0, 0.0, 0.0));
+	// }
+	// Simulator::Schedule (Seconds (2.0), &Set_velocity, Vector (0.1, 0.0, 0.0));
+	// Simulator::Schedule (Seconds (20.0), &Set_velocity, Vector (-0.1, 0.0, 0.0));
 		// Simulator::Schedule (Seconds (14.0), &Set_rcts_thr, 655350);
 		// Simulator::Schedule (Seconds (7.0), &Set_amsdusize, 5000);
 		// Simulator::Schedule (Seconds (7.0), &Set_ampdusize, 0);
@@ -1024,11 +1039,11 @@ int main (int argc, char *argv[])
 	Address localAddress (InetSocketAddress (Ipv4Address::GetAny (), server_port));
 	PacketSinkHelper packetSinkHelper ("ns3::UdpSocketFactory", localAddress);
 	ApplicationContainer serverApps = packetSinkHelper.Install (nS);
-	serverApps.Start (Seconds (1.0));
-	serverApps.Stop (Seconds (43.0));
+	serverApps.Start (Seconds (0.1));
+	serverApps.Stop (Seconds (41.0));
 
 	myOnOffHelper onoff ("ns3::UdpSocketFactory", Ipv4Address::GetAny ());
-	onoff.SetAttribute ("OnTime",  StringValue ("ns3::ConstantRandomVariable[Constant=20]"));
+	onoff.SetAttribute ("OnTime",  StringValue ("ns3::ConstantRandomVariable[Constant=40]"));
 	onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
 	onoff.SetAttribute ("MaxBytes", UintegerValue(0)); // 0 means infinite
 
@@ -1041,18 +1056,18 @@ int main (int argc, char *argv[])
 	// onoff.SetAttribute ("Interval", StringValue (Rng_string2));
 	// // onoff.SetAttribute ("Interval", StringValue ("ns3::UniformRandomVariable[Min=0.0002|Max=0.0005]"));
 	Ptr<mySequentialRandomVariable> x = CreateObject<mySequentialRandomVariable> ();
-	x->SetAttribute ("Min", DoubleValue (0.00041)); // must start from Min.
-	x->SetAttribute ("Max", DoubleValue (0.00012));
+	x->SetAttribute ("Min", DoubleValue (0.00012)); // must start from Min.
+	x->SetAttribute ("Max", DoubleValue (0.00041));
 	x->SetAttribute ("Consecutive", IntegerValue (1000));
-	x->SetAttribute ("Increment", DoubleValue (-0.00001));
+	x->SetAttribute ("Increment", DoubleValue (0.00001));
 	// onoff.SetAttribute ("Interval",  StringValue ("ns3::SequentialRandomVariable[Min=0.00015|Max=0.0005|Consecutive=10000]"));
 	onoff.SetAttribute ("Interval",  PointerValue (x));
 
 	AddressValue remoteAddress (InetSocketAddress (iSiR2.GetAddress (0), 9));
 	onoff.SetAttribute ("Remote", remoteAddress);
 	ApplicationContainer clientApp = onoff.Install (nU);
-	clientApp.Start (Seconds (2.0));
-	clientApp.Stop (Seconds (42.0));
+	clientApp.Start (Seconds (0.2));
+	clientApp.Stop (Seconds (40.0));
 
 //-----------------------Data Analyse-------------------------------------------
 	FlowMonitorHelper flowmon;
@@ -1060,7 +1075,7 @@ int main (int argc, char *argv[])
 
 	Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::PacketSink/Rx", MakeCallback (&PacketSinkTrace));
 	
-	Simulator::Stop (Seconds (20.0));
+	Simulator::Stop (Seconds (42.0));
 
 // GNUplot parameters
 	std::string base = "WSOL_Base";
