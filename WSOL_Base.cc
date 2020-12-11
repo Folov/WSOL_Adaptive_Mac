@@ -779,14 +779,12 @@ void Set_ampdusize (uint32_t size)
 {
 	Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/$ns3::RegularWifiMac/BE_MaxAmpduSize", UintegerValue (size));
 }
-// void Set_velocity (const Vector &speed)
-// {
-	// Config::Set ("/NodeList/*/$ns3::MobilityModel/Velocity", Vector3DValue (speed));
-// 	for (int i = 0; i < numberOfnodes; i++)
-// 	{
-// 		nodes.Get (i)->GetObject<ConstantVelocityMobilityModel> ()->SetVelocity (speed);
-// 	}
-// }
+static void
+CourseChangeCallback (std::string path, Ptr<const MobilityModel> model)
+{
+  Vector position = model->GetPosition ();
+  std::cout << "CourseChange " << path << " x=" << position.x << ", y=" << position.y << ", z=" << position.z << std::endl;
+}
 
 int main (int argc, char *argv[])
 {
@@ -960,6 +958,19 @@ int main (int argc, char *argv[])
 	stack.Install (nodes);
 
 //-----------------Mobility model(Must for wifi)--------------------------
+	double values[] = { 0.0, 3.141592 }; // Two directions: -> and <-
+	Ptr<DeterministicRandomVariable> det1 = CreateObject<DeterministicRandomVariable> ();
+	det1->SetValueArray (values, sizeof(values) / sizeof(values[0]));
+
+	Ptr<DeterministicRandomVariable> det2 = CreateObject<DeterministicRandomVariable> ();
+	det2->SetValueArray (values, sizeof(values) / sizeof(values[0]));
+
+	Ptr<DeterministicRandomVariable> det3 = CreateObject<DeterministicRandomVariable> ();
+	det3->SetValueArray (values, sizeof(values) / sizeof(values[0]));
+
+	Ptr<DeterministicRandomVariable> det4 = CreateObject<DeterministicRandomVariable> ();
+	det4->SetValueArray (values, sizeof(values) / sizeof(values[0]));
+
 	MobilityHelper mobility;
 	Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
 	positionAlloc->Add (Vector (0.0, 0.0, 0.0));
@@ -968,19 +979,46 @@ int main (int argc, char *argv[])
 	positionAlloc->Add (Vector (19.5, 0.0, 0.0));
 	positionAlloc->Add (Vector (26.0, 0.0, 0.0));
 	mobility.SetPositionAllocator (positionAlloc);
-	// mobility.SetMobilityModel ("ns3::ConstantVelocityMobilityModel");
 
-	double values[] = { 0.0, 3.141592 };
-	Ptr<DeterministicRandomVariable> det1 = CreateObject<DeterministicRandomVariable> ();
-	det1->SetValueArray (values, sizeof(values) / sizeof(values[0]));
+	mobility.SetMobilityModel ("ns3::ConstantVelocityMobilityModel");
+	mobility.Install (nodes.Get (0));
+	nodes.Get (0)->GetObject<ConstantVelocityMobilityModel> ()->SetVelocity (Vector (0.0, 0.0, 0.0));
+
 
 	mobility.SetMobilityModel ("ns3::RandomWalk2dMobilityModel",
                                "Bounds", RectangleValue (Rectangle (-50, 50, -50, 50)),
                                "Speed", StringValue ("ns3::ConstantRandomVariable[Constant=0.1]"),
                                "Direction", PointerValue (det1),
-                               "Time", StringValue ("20s"),
+                               // "Time", StringValue ("20s"),
                                "Distance", DoubleValue (2.0));
-	mobility.Install (nodes);
+	mobility.Install (nodes.Get (1));
+
+	mobility.SetMobilityModel ("ns3::RandomWalk2dMobilityModel",
+                               "Bounds", RectangleValue (Rectangle (-50, 50, -50, 50)),
+                               "Speed", StringValue ("ns3::ConstantRandomVariable[Constant=0.2]"),
+                               "Direction", PointerValue (det2),
+                               // "Time", StringValue ("20s"),
+                               "Distance", DoubleValue (4.0));
+	mobility.Install (nodes.Get (2));
+
+	mobility.SetMobilityModel ("ns3::RandomWalk2dMobilityModel",
+                               "Bounds", RectangleValue (Rectangle (-50, 50, -50, 50)),
+                               "Speed", StringValue ("ns3::ConstantRandomVariable[Constant=0.3]"),
+                               "Direction", PointerValue (det3),
+                               // "Time", StringValue ("20s"),
+                               "Distance", DoubleValue (6.0));
+	mobility.Install (nodes.Get (3));
+
+	mobility.SetMobilityModel ("ns3::RandomWalk2dMobilityModel",
+                               "Bounds", RectangleValue (Rectangle (-50, 50, -50, 50)),
+                               "Speed", StringValue ("ns3::ConstantRandomVariable[Constant=0.4]"),
+                               "Direction", PointerValue (det4),
+                               // "Time", StringValue ("20s"),
+                               "Distance", DoubleValue (8.0));
+	mobility.Install (nodes.Get (4));
+
+
+	Config::Connect ("/NodeList/*/$ns3::MobilityModel/CourseChange", MakeCallback (&CourseChangeCallback));
 
 	// for (int i = 0; i < numberOfnodes; i++)
 	// {
@@ -1054,15 +1092,15 @@ int main (int argc, char *argv[])
 
 	// std::string Rng_string2 = "ns3::ConstantRandomVariable[Constant=" + interval + "]";
 	// onoff.SetAttribute ("Interval", StringValue (Rng_string2));
-	// // onoff.SetAttribute ("Interval", StringValue ("ns3::UniformRandomVariable[Min=0.0002|Max=0.0005]"));
+	onoff.SetAttribute ("Interval", StringValue ("ns3::ConstantRandomVariable[Constant=0.0002]"));
+/*
 	Ptr<mySequentialRandomVariable> x = CreateObject<mySequentialRandomVariable> ();
 	x->SetAttribute ("Min", DoubleValue (0.00012)); // must start from Min.
 	x->SetAttribute ("Max", DoubleValue (0.00041));
 	x->SetAttribute ("Consecutive", IntegerValue (1000));
 	x->SetAttribute ("Increment", DoubleValue (0.00001));
-	// onoff.SetAttribute ("Interval",  StringValue ("ns3::SequentialRandomVariable[Min=0.00015|Max=0.0005|Consecutive=10000]"));
 	onoff.SetAttribute ("Interval",  PointerValue (x));
-
+*/
 	AddressValue remoteAddress (InetSocketAddress (iSiR2.GetAddress (0), 9));
 	onoff.SetAttribute ("Remote", remoteAddress);
 	ApplicationContainer clientApp = onoff.Install (nU);
