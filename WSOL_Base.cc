@@ -1097,7 +1097,7 @@ int main (int argc, char *argv[])
 	Ptr<mySequentialRandomVariable> x = CreateObject<mySequentialRandomVariable> ();
 	x->SetAttribute ("Min", DoubleValue (0.00015)); // must start from Min.
 	x->SetAttribute ("Max", DoubleValue (0.00045));
-	x->SetAttribute ("Consecutive", IntegerValue (560));
+	x->SetAttribute ("Consecutive", IntegerValue (580));
 	x->SetAttribute ("Increment", DoubleValue (0.00001));
 	onoff.SetAttribute ("Interval",  PointerValue (x));
 
