@@ -1092,15 +1092,15 @@ int main (int argc, char *argv[])
 
 	// std::string Rng_string2 = "ns3::ConstantRandomVariable[Constant=" + interval + "]";
 	// onoff.SetAttribute ("Interval", StringValue (Rng_string2));
-	onoff.SetAttribute ("Interval", StringValue ("ns3::ConstantRandomVariable[Constant=0.0002]"));
-/*
+	// onoff.SetAttribute ("Interval", StringValue ("ns3::ConstantRandomVariable[Constant=0.0002]"));
+
 	Ptr<mySequentialRandomVariable> x = CreateObject<mySequentialRandomVariable> ();
-	x->SetAttribute ("Min", DoubleValue (0.00012)); // must start from Min.
-	x->SetAttribute ("Max", DoubleValue (0.00041));
-	x->SetAttribute ("Consecutive", IntegerValue (1000));
+	x->SetAttribute ("Min", DoubleValue (0.00015)); // must start from Min.
+	x->SetAttribute ("Max", DoubleValue (0.00045));
+	x->SetAttribute ("Consecutive", IntegerValue (560));
 	x->SetAttribute ("Increment", DoubleValue (0.00001));
 	onoff.SetAttribute ("Interval",  PointerValue (x));
-*/
+
 	AddressValue remoteAddress (InetSocketAddress (iSiR2.GetAddress (0), 9));
 	onoff.SetAttribute ("Remote", remoteAddress);
 	ApplicationContainer clientApp = onoff.Install (nU);
