@@ -622,7 +622,7 @@ namespace ns3{
 //    | 0.0        5.0           10.0          15.0           20.0
 //    -------------------------------------------------------------->x
 
-double nSamplingPeriod = 0.05;   // 抽样间隔，根据总的Simulation时间做相应的调整
+double nSamplingPeriod = 0.01;   // 抽样间隔，根据总的Simulation时间做相应的调整
 using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("WSOL_Base");
 /*
@@ -1088,18 +1088,23 @@ int main (int argc, char *argv[])
 	// std::string Rng_string1 = "ns3::ConstantRandomVariable[Constant=" + pldsize + "]";
 	// onoff.SetAttribute ("PacketSize", StringValue (Rng_string1));
 	// onoff.SetAttribute ("PacketSize", StringValue ("ns3::UniformRandomVariable[Min=1000|Max=1472]"));
-	onoff.SetAttribute ("PacketSize", StringValue ("ns3::ConstantRandomVariable[Constant=1472]"));
+	Ptr<mySequentialRandomVariable> x = CreateObject<mySequentialRandomVariable> ();
+	x->SetAttribute ("Min", DoubleValue (200)); // must start from Min.
+	x->SetAttribute ("Max", DoubleValue (1472));
+	x->SetAttribute ("Consecutive", IntegerValue (255));
+	x->SetAttribute ("Increment", DoubleValue (20));
+	onoff.SetAttribute ("PacketSize", PointerValue (x));
 
 	// std::string Rng_string2 = "ns3::ConstantRandomVariable[Constant=" + interval + "]";
 	// onoff.SetAttribute ("Interval", StringValue (Rng_string2));
 	// onoff.SetAttribute ("Interval", StringValue ("ns3::ConstantRandomVariable[Constant=0.0002]"));
 
-	Ptr<mySequentialRandomVariable> x = CreateObject<mySequentialRandomVariable> ();
-	x->SetAttribute ("Min", DoubleValue (0.00015)); // must start from Min.
-	x->SetAttribute ("Max", DoubleValue (0.00045));
-	x->SetAttribute ("Consecutive", IntegerValue (540));
-	x->SetAttribute ("Increment", DoubleValue (0.00001));
-	onoff.SetAttribute ("Interval",  PointerValue (x));
+	Ptr<mySequentialRandomVariable> y = CreateObject<mySequentialRandomVariable> ();
+	y->SetAttribute ("Min", DoubleValue (0.00015)); // must start from Min.
+	y->SetAttribute ("Max", DoubleValue (0.00045));
+	y->SetAttribute ("Consecutive", IntegerValue (540));
+	y->SetAttribute ("Increment", DoubleValue (0.00001));
+	onoff.SetAttribute ("Interval",  PointerValue (y));
 
 	AddressValue remoteAddress (InetSocketAddress (iSiR2.GetAddress (0), 9));
 	onoff.SetAttribute ("Remote", remoteAddress);
