@@ -1091,8 +1091,8 @@ int main (int argc, char *argv[])
 	Ptr<mySequentialRandomVariable> x = CreateObject<mySequentialRandomVariable> ();
 	x->SetAttribute ("Min", DoubleValue (200)); // must start from Min.
 	x->SetAttribute ("Max", DoubleValue (1472));
-	x->SetAttribute ("Consecutive", IntegerValue (255));
-	x->SetAttribute ("Increment", DoubleValue (20));
+	x->SetAttribute ("Consecutive", IntegerValue (259));
+	x->SetAttribute ("Increment", DoubleValue (10));
 	onoff.SetAttribute ("PacketSize", PointerValue (x));
 
 	// std::string Rng_string2 = "ns3::ConstantRandomVariable[Constant=" + interval + "]";
@@ -1102,7 +1102,7 @@ int main (int argc, char *argv[])
 	Ptr<mySequentialRandomVariable> y = CreateObject<mySequentialRandomVariable> ();
 	y->SetAttribute ("Min", DoubleValue (0.00015)); // must start from Min.
 	y->SetAttribute ("Max", DoubleValue (0.00045));
-	y->SetAttribute ("Consecutive", IntegerValue (540));
+	y->SetAttribute ("Consecutive", IntegerValue (545));
 	y->SetAttribute ("Increment", DoubleValue (0.00001));
 	onoff.SetAttribute ("Interval",  PointerValue (y));
 
