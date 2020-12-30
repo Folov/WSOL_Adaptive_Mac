@@ -1026,9 +1026,6 @@ int main (int argc, char *argv[])
 	// }
 	// Simulator::Schedule (Seconds (2.0), &Set_velocity, Vector (0.1, 0.0, 0.0));
 	// Simulator::Schedule (Seconds (20.0), &Set_velocity, Vector (-0.1, 0.0, 0.0));
-		// Simulator::Schedule (Seconds (14.0), &Set_rcts_thr, 655350);
-		// Simulator::Schedule (Seconds (7.0), &Set_amsdusize, 5000);
-		// Simulator::Schedule (Seconds (7.0), &Set_ampdusize, 0);
 
 //-------------------Interface and IP Define------------------------------
 	Ipv4AddressHelper address;
@@ -1091,7 +1088,7 @@ int main (int argc, char *argv[])
 	Ptr<mySequentialRandomVariable> x = CreateObject<mySequentialRandomVariable> ();
 	x->SetAttribute ("Min", DoubleValue (200)); // must start from Min.
 	x->SetAttribute ("Max", DoubleValue (1472));
-	x->SetAttribute ("Consecutive", IntegerValue (32760));
+	x->SetAttribute ("Consecutive", IntegerValue (32825));
 	x->SetAttribute ("Increment", DoubleValue (1272));
 	onoff.SetAttribute ("PacketSize", PointerValue (x));
 
@@ -1111,6 +1108,12 @@ int main (int argc, char *argv[])
 	ApplicationContainer clientApp = onoff.Install (nU);
 	clientApp.Start (Seconds (0.2));
 	clientApp.Stop (Seconds (40.0));
+
+//-----------------------Adaptive Function--------------------------------------
+
+		// Simulator::Schedule (Seconds (14.0), &Set_rcts_thr, 655350);
+		// Simulator::Schedule (Seconds (7.0), &Set_amsdusize, 5000);
+		// Simulator::Schedule (Seconds (7.0), &Set_ampdusize, 0);
 
 //-----------------------Data Analyse-------------------------------------------
 	FlowMonitorHelper flowmon;
