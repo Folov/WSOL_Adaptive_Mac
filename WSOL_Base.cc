@@ -1113,7 +1113,7 @@ int main (int argc, char *argv[])
 
 		// Simulator::Schedule (Seconds (14.0), &Set_rcts_thr, 655350);
 		// Simulator::Schedule (Seconds (7.0), &Set_amsdusize, 5000);
-		Simulator::Schedule (Seconds (0.01), &Set_amsdusize, 3100);
+		Simulator::Schedule (Seconds (0.01), &Set_amsdusize, 6200);
 		Simulator::Schedule (Seconds (10.0), &Set_amsdusize, 0);
 
 //-----------------------Data Analyse-------------------------------------------
