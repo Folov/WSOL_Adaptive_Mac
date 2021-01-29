@@ -791,7 +791,7 @@ int main (int argc, char *argv[])
 	bool verbose = true;
 	bool tracing = false;
 	std::string rcts_thr = "655350"; // Default 655350 off
-	std::string interval = "0.0002";
+	std::string interval = "0.00017";
 	std::string pldsize = "1472";
 	uint32_t ampdusize = 65535; // 65535 byte ht default
 	uint32_t amsdusize = 0; // 7935 byte ht default
@@ -1028,7 +1028,7 @@ int main (int argc, char *argv[])
 	std::string Rng_string1 = "ns3::ConstantRandomVariable[Constant=" + pldsize + "]";
 	onoff.SetAttribute ("PacketSize", StringValue (Rng_string1));
 	// onoff.SetAttribute ("PacketSize", StringValue ("ns3::UniformRandomVariable[Min=1000|Max=1472]"));
-	onoff.SetAttribute ("PacketSize", StringValue ("ns3::ConstantRandomVariable[Constant=1472]"));
+	// onoff.SetAttribute ("PacketSize", StringValue ("ns3::ConstantRandomVariable[Constant=1472]"));
 	/*
 	Ptr<mySequentialRandomVariable> x = CreateObject<mySequentialRandomVariable> ();
 	x->SetAttribute ("Min", DoubleValue (200)); // must start from Min.
@@ -1040,7 +1040,7 @@ int main (int argc, char *argv[])
 
 	std::string Rng_string2 = "ns3::ConstantRandomVariable[Constant=" + interval + "]";
 	onoff.SetAttribute ("Interval", StringValue (Rng_string2));
-	onoff.SetAttribute ("Interval", StringValue ("ns3::ConstantRandomVariable[Constant=0.00017]"));
+	// onoff.SetAttribute ("Interval", StringValue ("ns3::ConstantRandomVariable[Constant=0.00016]"));
 	/*
 	Ptr<mySequentialRandomVariable> y = CreateObject<mySequentialRandomVariable> ();
 	y->SetAttribute ("Min", DoubleValue (0.00015)); // must start from Min.
